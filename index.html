@@ -121,7 +121,7 @@
             
             <button class="btn btn-verde" style="font-size: 20px; padding: 20px;" onclick="girarRuletaAdmin()">🎰 GIRAR RULETA (8 SEG)</button>
 
-            <div class="ruleta-wrapper pequena">
+            <div class="ruleta-wrapper pequena" id="wrap-ruleta-cajero" style="display: none;">
                 <div class="ruleta-borde"></div>
                 <div class="puntero"></div>
                 <div class="ruleta-circulo" id="ruleta-cajero"></div>
@@ -229,6 +229,13 @@
         // --- CONTROL RULETA ADMIN ---
         async function controlRuleta(comando, ganador="") {
             fetch(`${API_GAS}?action=ruleta_control&comando=${comando}&ganador=${ganador}`);
+            
+            // Lógica local para mostrar/ocultar en panel de cajero
+            if(comando === 'ACTIVAR') {
+                document.getElementById('wrap-ruleta-cajero').style.display = 'block';
+            } else if (comando === 'APAGAR') {
+                document.getElementById('wrap-ruleta-cajero').style.display = 'none';
+            }
         }
 
         function girarRuletaAdmin() {
