@@ -11,28 +11,44 @@
         .pantalla { display: none; padding: 20px; max-width: 500px; margin: 0 auto; min-height: 100vh; }
         .activa { display: block; }
         
-        input, select { width: 100%; background: #000; color: var(--main); border: 1px solid var(--main); padding: 15px; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; text-align: center; outline: none; }
-        .btn { background: var(--main); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-bottom: 15px; }
+        input, select { width: 100%; background: #000; color: var(--main); border: 1px solid var(--main); padding: 15px; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; text-align: center; outline: none; font-weight: bold; }
+        .btn { background: var(--main); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.1s; }
+        .btn:active { transform: scale(0.98); }
         .btn-verde { background: var(--verde); } .btn-rojo { background: var(--rojo); color: white;}
         
         .header { background: var(--box); border-bottom: 2px solid var(--main); padding: 15px; margin-bottom: 20px; border-radius: 0 0 15px 15px; }
         .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         
-        /* 🎡 NUEVA RULETA 17 NÚMEROS 🎡 */
-        .ruleta-wrapper { position: relative; width: 300px; height: 300px; margin: 30px auto; display: none; }
+        /* 🎡 DISEÑO PREMIUM DE LA RULETA 🎡 */
+        .ruleta-wrapper { position: relative; width: 320px; height: 320px; margin: 30px auto; }
         .ruleta-wrapper.pequena { width: 220px; height: 220px; margin: 15px auto; }
-        .ruleta-circulo { width: 100%; height: 100%; border-radius: 50%; border: 6px solid var(--blanco); position: relative; transition: transform 8s cubic-bezier(0.1, 0.8, 0.1, 1); box-shadow: 0 0 20px rgba(243, 156, 18, 0.5); }
-        .ruleta-numero { position: absolute; width: 40px; height: 50%; left: calc(50% - 20px); top: 0; transform-origin: bottom center; text-align: center; color: white; font-weight: 900; font-size: 16px; padding-top: 8px; box-sizing: border-box; text-shadow: 2px 2px 4px #000; }
-        .pequena .ruleta-numero { font-size: 12px; padding-top: 5px; }
-        .puntero { position: absolute; top: -15px; left: calc(50% - 15px); width: 30px; height: 35px; background: var(--blanco); clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; box-shadow: 0 5px 10px rgba(0,0,0,0.5); }
         
-        #ruleta-publica { display: flex; flex-direction: column; justify-content: center; align-items: center; background: #000; height: 100vh;}
-        .telon-negro { font-size: 20px; color: #555; animation: parpadeo 2s infinite; }
-        @keyframes parpadeo { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        /* El borde exterior de oro */
+        .ruleta-borde { position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; border-radius: 50%; background: linear-gradient(45deg, #f39c12, #f1c40f, #e67e22, #f39c12); box-shadow: 0 0 30px rgba(243, 156, 18, 0.6); z-index: 0; }
         
-        #loader { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; color:var(--main); justify-content:center; align-items:center; flex-direction:column; }
-        .modal-premio { display:none; background: var(--main); color:black; padding: 10px 30px; font-size: 30px; font-weight: bold; border-radius: 10px; margin-top: 20px; animation: salto 1s ease; }
-        @keyframes salto { 0% { transform: scale(0.5); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        /* El círculo que gira */
+        .ruleta-circulo { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; position: relative; z-index: 1; transition: transform 8s cubic-bezier(0.1, 0.8, 0.1, 1); overflow: hidden; background: #222; }
+        
+        /* Los números bien posicionados */
+        .ruleta-numero { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-radius: 50%; }
+        .ruleta-numero span { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); color: white; font-weight: 900; font-size: 22px; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); }
+        .pequena .ruleta-numero span { font-size: 14px; top: 4px; }
+        
+        /* El puntero (Flecha) */
+        .puntero { position: absolute; top: -25px; left: calc(50% - 20px); width: 40px; height: 50px; background: #fff; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.8)); }
+        .pequena .puntero { top: -15px; left: calc(50% - 15px); width: 30px; height: 40px; }
+
+        /* El centro de la ruleta */
+        .ruleta-centro { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: #fff; border-radius: 50%; z-index: 5; border: 4px solid var(--main); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .pequena .ruleta-centro { width: 25px; height: 25px; border-width: 2px; }
+
+        #ruleta-publica { display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #222 0%, #000 100%); height: 100vh;}
+        .telon-negro { font-size: 24px; color: var(--main); animation: parpadeo 2s infinite; font-weight: bold; text-shadow: 0 0 10px rgba(243,156,18,0.5); }
+        @keyframes parpadeo { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+        
+        #loader { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; color:var(--main); justify-content:center; align-items:center; flex-direction:column; }
+        .modal-premio { display:none; background: var(--main); color:black; padding: 15px 40px; font-size: 35px; font-weight: 900; border-radius: 15px; margin-top: 30px; animation: salto 1s ease; box-shadow: 0 0 30px rgba(243,156,18,0.8); text-transform: uppercase; }
+        @keyframes salto { 0% { transform: scale(0.5); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -47,14 +63,14 @@
     <div id="loader"><h2 id="loader-txt">Procesando...</h2></div>
 
     <div id="pantalla-login" class="pantalla activa">
-        <h1 style="color:var(--main); font-size: 40px; margin-bottom: 5px;">CASINO VIP</h1>
-        <p style="color:#888; margin-bottom: 30px;">ADMINISTRACIÓN BAZZAN</p>
+        <h1 style="color:var(--main); font-size: 45px; margin-bottom: 5px; text-shadow: 0 0 15px var(--main);">CASINO VIP</h1>
+        <p style="color:#888; margin-bottom: 30px; font-size: 18px;">ADMINISTRACIÓN BAZZAN</p>
         
         <input type="text" id="l-user" placeholder="Usuario">
         <input type="password" id="l-pass" placeholder="Clave">
-        <button class="btn" onclick="iniciarSesion()">Entrar (Personal)</button>
-        <br><br><hr style="border-color:#333;"><br>
-        <button class="btn" style="background:#333; color:white;" onclick="verRuletaPublica()">Ver Ruleta (Clientes)</button>
+        <button class="btn" onclick="iniciarSesion()">Entrar (Cajero)</button>
+        <br><br><hr style="border-color:#333; margin: 30px 0;"><br>
+        <button class="btn" style="background:#222; color:white; border: 2px solid #444;" onclick="verRuletaPublica()">Ver Pantalla Clientes</button>
     </div>
 
     <div id="pantalla-dashboard" class="pantalla">
@@ -70,15 +86,15 @@
         <div id="sec-vales" style="display:block;">
             <h3 style="color:var(--main);">COBRO DE VOUCHER</h3>
             <input type="file" accept="image/*" capture="environment" id="cam-vale" style="display:none;" onchange="procesarFotoVision(this, 'vale')">
-            <button class="btn" style="padding:30px; border:2px dashed var(--main); background:transparent; color:var(--main);" onclick="document.getElementById('cam-vale').click()">📸 FOTO AL MONITOR</button>
+            <button class="btn" style="padding:25px; border:2px dashed var(--main); background:transparent; color:var(--main);" onclick="document.getElementById('cam-vale').click()">📸 FOTO AL MONITOR</button>
             
-            <div id="form-vale" style="display:none; margin-top:20px;">
+            <div id="form-vale" style="display:none; margin-top:20px; background:#111; padding:20px; border-radius:15px;">
                 <label style="font-size:12px; color:#888;">CÓDIGO:</label>
                 <input type="text" id="v-cod">
                 <label style="font-size:12px; color:#888;">MONTO MÁQUINA:</label>
                 <input type="number" id="v-maq" oninput="document.getElementById('v-pag').value = Math.floor(this.value/100)*100">
                 <label style="font-size:12px; color:#888;">A PAGAR AL CLIENTE:</label>
-                <input type="number" id="v-pag" style="color:var(--verde); font-weight:bold; font-size:24px;">
+                <input type="number" id="v-pag" style="color:var(--verde); font-weight:900; font-size:28px;">
                 <button class="btn btn-verde" onclick="guardarDatosGAS('registrar_vale')">✅ APROBAR Y GUARDAR</button>
             </div>
         </div>
@@ -86,9 +102,9 @@
         <div id="sec-bonos" style="display:none;">
             <h3 style="color:var(--main);">BONO DIARIO $2.000</h3>
             <input type="file" accept="image/*" capture="environment" id="cam-bono" style="display:none;" onchange="procesarFotoVision(this, 'bono')">
-            <button class="btn" style="padding:30px; border:2px dashed var(--verde); background:transparent; color:var(--verde);" onclick="document.getElementById('cam-bono').click()">📸 FOTO AL CARNET</button>
+            <button class="btn" style="padding:25px; border:2px dashed var(--verde); background:transparent; color:var(--verde);" onclick="document.getElementById('cam-bono').click()">📸 FOTO AL CARNET</button>
             
-            <div id="form-bono" style="display:none; margin-top:20px;">
+            <div id="form-bono" style="display:none; margin-top:20px; background:#111; padding:20px; border-radius:15px;">
                 <label style="font-size:12px; color:#888;">RUT DETECTADO:</label>
                 <input type="text" id="b-rut">
                 <button class="btn btn-verde" id="btn-aprobar-bono" onclick="guardarDatosGAS('registrar_bono')">✅ ENTREGAR $2.000</button>
@@ -96,37 +112,44 @@
         </div>
 
         <div id="sec-ruleta" style="display:none;">
-            <h3 style="color:var(--main);">CONTROL DE SORTEO</h3>
-            <button class="btn" style="background:#555; color:white;" onclick="controlRuleta('ACTIVAR')">1. MOSTRAR A CLIENTES</button>
-            <button class="btn btn-verde" onclick="girarRuletaAdmin()">2. GIRAR RULETA (8 SEGUNDOS)</button>
+            <h3 style="color:var(--main);">PANEL DE SORTEO</h3>
             
-            <div class="ruleta-wrapper pequena" id="wrap-ruleta-cajero">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" style="background:#3498db; color:white; font-size: 14px;" onclick="controlRuleta('ACTIVAR')">👀 MOSTRAR</button>
+                <button class="btn btn-rojo" style="font-size: 14px;" onclick="controlRuleta('APAGAR')">⬛ APAGAR</button>
+            </div>
+            
+            <button class="btn btn-verde" style="font-size: 20px; padding: 20px;" onclick="girarRuletaAdmin()">🎰 GIRAR RULETA (8 SEG)</button>
+
+            <div class="ruleta-wrapper pequena">
+                <div class="ruleta-borde"></div>
                 <div class="puntero"></div>
                 <div class="ruleta-circulo" id="ruleta-cajero"></div>
+                <div class="ruleta-centro"></div>
             </div>
-
-            <button class="btn btn-rojo" onclick="controlRuleta('APAGAR')" style="margin-top:15px;">3. APAGAR (PANTALLA NEGRA)</button>
             
-            <div style="background:#222; padding:15px; border-radius:10px; margin-top:20px;">
-                <h4 style="margin-top:0;">🏆 REGISTRAR GANADOR</h4>
-                <input type="number" id="s-maq" placeholder="Máquina Ganadora">
-                <input type="number" id="s-monto" placeholder="Monto del Premio">
+            <div style="background:#111; padding:20px; border-radius:15px; margin-top:20px; border: 1px solid #333;">
+                <h4 style="margin-top:0; color:var(--main);">🏆 GUARDAR PREMIO</h4>
+                <input type="number" id="s-maq" placeholder="N° Máquina Ganadora">
+                <input type="number" id="s-monto" placeholder="Monto del Premio ($)">
                 <input type="file" accept="image/*" capture="environment" id="cam-ganador" style="display:none;" onchange="convertirFoto(this)">
-                <button class="btn" onclick="document.getElementById('cam-ganador').click()">📸 FOTO CLIENTE / CARNET</button>
-                <button class="btn btn-verde" onclick="guardarDatosGAS('registrar_sorteo')">✅ GUARDAR PREMIO</button>
+                <button class="btn" style="background:#555; color:white;" onclick="document.getElementById('cam-ganador').click()">📸 FOTO GANADOR/CARNET</button>
+                <button class="btn btn-verde" onclick="guardarDatosGAS('registrar_sorteo')">✅ REGISTRAR PREMIO</button>
             </div>
         </div>
     </div>
 
     <div id="ruleta-publica" class="pantalla">
-        <div id="telon" class="telon-negro">⏳ ESPERANDO SORTEO BAZZAN...</div>
+        <div id="telon" class="telon-negro">⏳ ESPERANDO PRÓXIMO SORTEO...</div>
         
-        <div class="ruleta-wrapper" id="wrap-ruleta-cliente">
+        <div class="ruleta-wrapper" id="wrap-ruleta-cliente" style="display: none;">
+            <div class="ruleta-borde"></div>
             <div class="puntero"></div>
             <div class="ruleta-circulo" id="ruleta-cliente"></div>
+            <div class="ruleta-centro"></div>
         </div>
         
-        <div id="premio-ganador" class="modal-premio">¡MÁQUINA GANADORA: <span id="ganador-txt"></span>!</div>
+        <div id="premio-ganador" class="modal-premio">¡MÁQUINA <span id="ganador-txt"></span> GANA!</div>
     </div>
 
     <script>
@@ -141,54 +164,62 @@
             try {
                 let res = await fetch(`${API_GAS}?action=login&u=${u}&p=${p}`); let data = await res.json();
                 if(data.status === "success") {
-                    usuarioActual = data.usuario; document.getElementById('nom-cajero').innerText = usuarioActual;
+                    usuarioActual = data.usuario; document.getElementById('nom-cajero').innerText = usuarioActual.toUpperCase();
                     document.getElementById('pantalla-login').classList.remove('activa'); document.getElementById('pantalla-dashboard').classList.add('activa');
                 } else alert(data.mensaje);
-            } catch(e) { alert("Error de red"); }
+            } catch(e) { alert("Error de conexión"); }
             ocultarLoader();
         }
 
-        // --- DIBUJAR LAS RULETAS CON 17 NÚMEROS ---
+        // --- CONSTRUIR RULETAS COLORIDAS CON 17 NÚMEROS ---
         function construirRuletas(id) {
             let r = document.getElementById(id);
             r.innerHTML = '';
             let angulo = 360 / 17;
-            let colores = ['#e74c3c', '#2980b9', '#27ae60', '#8e44ad', '#e67e22', '#16a085'];
+            // Colores vibrantes de casino: Rojo, Azul, Dorado, Morado, Naranja, Verde
+            let colores = ['#E50914', '#1E90FF', '#FFD700', '#8A2BE2', '#FF8C00', '#00FA9A']; 
             let bg = 'conic-gradient(';
             
             for(let i=1; i<=17; i++) {
-                let start = (i-1)*angulo;
-                let end = i*angulo;
-                let color = colores[i % colores.length];
+                let start = (i-1) * angulo;
+                let end = i * angulo;
+                let color = colores[(i-1) % colores.length];
+                
+                // Generar el fondo como torta
                 bg += `${color} ${start}deg ${end}deg${i<17?',':')'}`;
                 
+                // Crear el número y posicionarlo
                 let num = document.createElement('div');
                 num.className = 'ruleta-numero';
                 num.style.transform = `rotate(${start + angulo/2}deg)`;
-                num.innerText = i;
+                
+                let span = document.createElement('span');
+                span.innerText = i;
+                num.appendChild(span);
+                
                 r.appendChild(num);
             }
             r.style.background = bg;
         }
         
-        // Inicializar ruletas
         construirRuletas('ruleta-cajero');
         construirRuletas('ruleta-cliente');
 
-        // --- FUNCIÓN MATEMÁTICA PARA GIRAR ---
+        // --- FUNCIÓN PARA GIRAR LA RULETA ---
         function aplicarGiro(idContenedor, idRuleta, ganador) {
             let r = document.getElementById(idRuleta);
             document.getElementById(idContenedor).style.display = 'block';
             
-            // Reiniciar posición rápidamente
+            // Volver a posición cero sin animación
             r.style.transition = 'none';
             r.style.transform = 'rotate(0deg)';
             
+            // Un micro-retraso para que el navegador capte el reinicio
             setTimeout(() => {
                 let angulo = 360 / 17;
                 let centroSlice = (ganador - 1) * angulo + angulo / 2;
-                let girosCompletos = 360 * 10; // 10 vueltas (da el efecto largo de 8 seg)
-                let rotacionFinal = girosCompletos - centroSlice; // Frena exacto en el medio del ganador
+                let girosCompletos = 360 * 10; // 10 vueltas completas de suspenso
+                let rotacionFinal = girosCompletos - centroSlice;
                 
                 r.style.transition = 'transform 8s cubic-bezier(0.1, 0.7, 0.1, 1)';
                 r.style.transform = `rotate(${rotacionFinal}deg)`;
@@ -198,20 +229,14 @@
         // --- CONTROL RULETA ADMIN ---
         async function controlRuleta(comando, ganador="") {
             fetch(`${API_GAS}?action=ruleta_control&comando=${comando}&ganador=${ganador}`);
-            
-            if(comando === 'ACTIVAR') {
-                document.getElementById('wrap-ruleta-cajero').style.display = 'block';
-            } else if (comando === 'APAGAR') {
-                document.getElementById('wrap-ruleta-cajero').style.display = 'none';
-            }
         }
 
         function girarRuletaAdmin() {
             let ganador = Math.floor(Math.random() * 17) + 1; // Sortea del 1 al 17
             controlRuleta("GIRAR", ganador);
-            document.getElementById('s-maq').value = ganador;
+            document.getElementById('s-maq').value = ganador; // Deja el número listo para pagar
             
-            // Girar en la pantalla del cajero inmediatamente
+            // Gira en la pantalla de la cajera de inmediato
             aplicarGiro('wrap-ruleta-cajero', 'ruleta-cajero', ganador);
         }
 
@@ -220,7 +245,7 @@
         function verRuletaPublica() {
             document.getElementById('pantalla-login').classList.remove('activa');
             document.getElementById('ruleta-publica').classList.add('activa');
-            setInterval(sincronizarRuleta, 2000); // Revisa más rápido (2 seg)
+            setInterval(sincronizarRuleta, 2000); // Revisa cada 2 segundos
         }
 
         async function sincronizarRuleta() {
@@ -239,10 +264,10 @@
                         document.getElementById('ruleta-cliente').style.transform = "rotate(0deg)";
                     }
                     if(d.estado === "GIRANDO") { 
-                        telon.style.display = "none"; premio.style.display = "none";
+                        telon.style.display = "none"; premio.style.display = "none"; wrap.style.display = "block";
                         aplicarGiro('wrap-ruleta-cliente', 'ruleta-cliente', d.ganador);
                         
-                        // Mostrar el cartelito ganador justo cuando termine de girar (a los 8 segundos)
+                        // Aparece el cartel ganador a los 8 segundos (cuando frena)
                         setTimeout(() => {
                             document.getElementById('ganador-txt').innerText = d.ganador;
                             premio.style.display = "block";
@@ -253,11 +278,96 @@
             } catch(e){}
         }
 
-        // --- API VISION Y GUARDADO DE DATOS (Se mantiene igual que la versión anterior) ---
-        async function procesarFotoVision(input, tipo) { /* ... Código omitido para no alargar (usa el mismo tuyo si gustas) ...*/ }
-        async function guardarDatosGAS(accion) { /* ... Código omitido ...*/ }
-        function comprimirImagen(file) { /* ... Código omitido ...*/ }
-        function convertirFoto(input) { /* ... Código omitido ...*/ }
+        // --- INTELIGENCIA ARTIFICIAL Y GUARDADO (CÓDIGO COMPLETO) ---
+        async function procesarFotoVision(input, tipo) {
+            if(!input.files[0]) return;
+            mostrarLoader("La I.A. está leyendo...");
+            fotoBase64Temporal = await comprimirImagen(input.files[0]);
+            
+            try {
+                if(API_VISION === "TU_CLAVE_DE_GOOGLE_AQUI") throw new Error("Falta API KEY");
+                let body = { requests: [{ image: { content: fotoBase64Temporal.split(",")[1] }, features: [{ type: "TEXT_DETECTION" }] }] };
+                let response = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${API_VISION}`, { method: 'POST', body: JSON.stringify(body) });
+                let data = await response.json();
+                let texto = data.responses[0].fullTextAnnotation ? data.responses[0].fullTextAnnotation.text.toUpperCase() : "";
+
+                if(tipo === 'vale') {
+                    let codMatch = texto.match(/(\d{4,}[\s\-]*\d{4,})/);
+                    document.getElementById('v-cod').value = codMatch ? codMatch[1].replace(/\n/g,'').trim() : "";
+                    
+                    let todosNumeros = texto.match(/\d{1,3}(?:[.,]\d{3})+|\d{3,}/g);
+                    let montoExtraido = 0;
+                    if(todosNumeros) {
+                        for(let numStr of todosNumeros) {
+                            let n = parseInt(numStr.replace(/[.,]/g, ''));
+                            if(n >= 100 && n < 1000000 && (!codMatch || !codMatch[1].includes(n.toString()))) { montoExtraido = n; break; }
+                        }
+                    }
+                    document.getElementById('v-maq').value = montoExtraido;
+                    document.getElementById('v-pag').value = Math.floor(montoExtraido/100)*100;
+                    document.getElementById('form-vale').style.display = 'block';
+
+                } else if(tipo === 'bono') {
+                    let rutMatch = texto.match(/\d{1,2}\.?\d{3}\.?\d{3}[-A-Z0-9]/);
+                    let rutLimpio = rutMatch ? rutMatch[0].replace(/\./g,'').replace('-','') : "NO DETECTADO";
+                    document.getElementById('b-rut').value = rutLimpio;
+                    document.getElementById('form-bono').style.display = 'block';
+                    
+                    mostrarLoader("Verificando RUT...");
+                    let chk = await fetch(`${API_GAS}?action=verificar_rut&rut=${rutLimpio}`);
+                    let dChk = await chk.json();
+                    if(dChk.status === "error") {
+                        alert(dChk.mensaje);
+                        document.getElementById('btn-aprobar-bono').style.display = 'none';
+                    } else {
+                        document.getElementById('btn-aprobar-bono').style.display = 'block';
+                    }
+                }
+            } catch(e) {
+                alert("Modo manual activado. Ingrese los datos a mano.");
+                if(tipo==='vale') document.getElementById('form-vale').style.display = 'block';
+                if(tipo==='bono') document.getElementById('form-bono').style.display = 'block';
+            }
+            ocultarLoader();
+        }
+
+        async function guardarDatosGAS(accion) {
+            mostrarLoader("Guardando en Excel...");
+            let payload = { action: accion, cajero: usuarioActual, fotoBase64: fotoBase64Temporal };
+            
+            if(accion === 'registrar_vale') {
+                payload.codigo = document.getElementById('v-cod').value;
+                payload.monto_maq = document.getElementById('v-maq').value;
+                payload.monto_pag = document.getElementById('v-pag').value;
+            } else if(accion === 'registrar_bono') {
+                payload.rut = document.getElementById('b-rut').value; payload.monto = 2000;
+            } else if(accion === 'registrar_sorteo') {
+                payload.maquina = document.getElementById('s-maq').value; payload.monto = document.getElementById('s-monto').value;
+            }
+
+            try {
+                let r = await fetch(API_GAS, { method: 'POST', body: JSON.stringify(payload) });
+                let d = await r.json(); alert(d.mensaje);
+                document.getElementById('form-vale').style.display = 'none'; document.getElementById('form-bono').style.display = 'none'; fotoBase64Temporal = "";
+            } catch(e) { alert("Error al guardar."); }
+            ocultarLoader();
+        }
+
+        function comprimirImagen(file) {
+            return new Promise((resolve) => {
+                let reader = new FileReader(); reader.readAsDataURL(file);
+                reader.onload = event => {
+                    let img = new Image(); img.src = event.target.result;
+                    img.onload = () => {
+                        let canvas = document.createElement('canvas'); let ctx = canvas.getContext('2d');
+                        let maxW = 800; let scale = maxW / img.width; canvas.width = maxW; canvas.height = img.height * scale;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
+                    }
+                }
+            });
+        }
+        function convertirFoto(input) { comprimirImagen(input.files[0]).then(res => fotoBase64Temporal = res); }
     </script>
 </body>
 </html>
