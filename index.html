@@ -38,7 +38,7 @@
         const API_VISION = "AIzaSyBi9F3K2PXOeRoR2w-rf63u8d6PZyFUT-U"; 
         let usuarioActual = "";
         let fotoBase64Temporal = "";
-        let yaMostrePremio = false; // Candado para el suspenso
+        let yaMostrePremio = false; 
     </script>
 
     <div id="loader"><h2 id="loader-txt">Procesando...</h2></div>
@@ -104,16 +104,20 @@
         function mostrarSeccion(id) { ['sec-vales','sec-bonos','sec-ruleta'].forEach(s => document.getElementById(s).style.display='none'); document.getElementById(id).style.display='block'; }
 
         async function iniciarSesion() {
-            let u = document.getElementById('l-user').value; let p = document.getElementById('l-pass').value;
-            loader("Entrando...");
+            let u = document.getElementById('l-user').value; 
+            let p = document.getElementById('l-pass').value;
+            if(!u || !p) return alert("Ingrese usuario y clave");
+            loader("Conectando con Excel...");
             try {
-                let res = await fetch(`${API_GAS}?action=login&u=${u}&p=${p}`);
+                let res = await fetch(`${API_GAS}?action=login&u=${encodeURIComponent(u)}&p=${encodeURIComponent(p)}`);
                 let data = await res.json();
                 if(data.status === "success") {
-                    usuarioActual = data.usuario; document.getElementById('nom-cajero').innerText = usuarioActual.toUpperCase();
-                    document.getElementById('pantalla-login').classList.remove('activa'); document.getElementById('pantalla-dashboard').classList.add('activa');
-                } else alert(data.mensaje);
-            } catch(e) { alert("Error de servidor. Reintenta."); }
+                    usuarioActual = data.usuario; 
+                    document.getElementById('nom-cajero').innerText = usuarioActual.toUpperCase();
+                    document.getElementById('pantalla-login').classList.remove('activa'); 
+                    document.getElementById('pantalla-dashboard').classList.add('activa');
+                } else { alert(data.mensaje); }
+            } catch(e) { alert("Error de conexión con el servidor Excel."); }
             ocultarLoader();
         }
 
@@ -142,7 +146,7 @@
         }
 
         async function controlRuleta(comando, ganador="") {
-            if(comando === 'APAGAR') { document.getElementById('wrap-ruleta-cajero').style.display = 'none'; }
+            if(comando === 'APAGAR') document.getElementById('wrap-ruleta-cajero').style.display = 'none';
             if(comando === 'ACTIVAR') document.getElementById('wrap-ruleta-cajero').style.display = 'block';
             fetch(`${API_GAS}?action=ruleta_control&comando=${comando}&ganador=${ganador}`);
         }
@@ -160,7 +164,8 @@
                 try {
                     let r = await fetch(`${API_GAS}?action=ruleta_estado`);
                     let d = await r.json();
-                    let telon = document.getElementById('telon'); let wrap = document.getElementById('wrap-ruleta-cliente');
+                    let telon = document.getElementById('telon'); 
+                    let wrap = document.getElementById('wrap-ruleta-cliente');
                     let premio = document.getElementById('premio-ganador');
                     
                     if(d.estado === "ESPERA") { telon.style.display="block"; wrap.style.display="none"; premio.style.display="none"; yaMostrePremio = false; }
@@ -168,7 +173,10 @@
                     if(d.estado === "GIRANDO" && !yaMostrePremio) {
                         yaMostrePremio = true;
                         aplicarGiro('wrap-ruleta-cliente', 'ruleta-cliente', d.ganador);
-                        setTimeout(() => { document.getElementById('ganador-txt').innerText = d.ganador; premio.style.display="block"; }, 8500);
+                        setTimeout(() => { 
+                            document.getElementById('ganador-txt').innerText = d.ganador; 
+                            premio.style.display="block"; 
+                        }, 8500);
                     }
                 } catch(e){}
             }, 2000);
@@ -200,7 +208,7 @@
             let p = { action: accion, cajero: usuarioActual, fotoBase64: fotoBase64Temporal };
             if(accion==='registrar_vale') { p.codigo=document.getElementById('v-cod').value; p.monto_pag=document.getElementById('v-pag').value; }
             else { p.rut=document.getElementById('b-rut').value; p.monto=2000; }
-            try { await fetch(API_GAS, { method: 'POST', body: JSON.stringify(p) }); alert("¡EXITO!"); location.reload(); } catch(e) { alert("Error"); }
+            try { await fetch(API_GAS, { method: 'POST', body: JSON.stringify(p) }); alert("¡ÉXITO AL GUARDAR!"); location.reload(); } catch(e) { alert("Error"); }
             ocultarLoader();
         }
 
