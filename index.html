@@ -6,12 +6,12 @@
     <title>CASINO VIP - BAZZAN</title>
     <style>
         :root { --main: #f39c12; --bg: #0d0d0d; --box: #1a1a1a; --rojo: #e74c3c; --verde: #2ecc71; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; text-align: center; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; text-align: center; }
         
-        /* DISEÑO VIP ORIGINAL */
         .pantalla { display: none; padding: 20px; max-width: 500px; margin: 0 auto; min-height: 100vh; }
         .activa { display: block; }
         
+        /* LOGO ORIGINAL */
         .logo-container { margin: 30px 0; }
         .logo-text { font-size: 50px; font-weight: 900; color: var(--main); letter-spacing: -2px; margin: 0; }
         .sub-text { color: #555; letter-spacing: 4px; font-size: 14px; margin-top: -5px; }
@@ -27,14 +27,16 @@
         .header-cajero { background: var(--box); padding: 20px; border-radius: 0 0 25px 25px; border-bottom: 2px solid var(--main); margin-bottom: 25px; }
         .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
 
-        /* RULETA */
+        /* RULETA MEJORADA */
         .ruleta-wrapper { position: relative; width: 320px; height: 320px; margin: 30px auto; }
-        .pequena { transform: scale(0.7); margin: -40px auto; }
-        .ruleta-circulo { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #fff; position: relative; transition: transform 8s cubic-bezier(0.1, 0.8, 0.1, 1); overflow: hidden; }
-        .puntero { position: absolute; top: -25px; left: calc(50% - 20px); width: 40px; height: 50px; background: #fff; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; }
+        .pequena { transform: scale(0.7); margin: -50px auto; }
+        .ruleta-circulo { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #fff; position: relative; transition: transform 8s cubic-bezier(0.1, 0.8, 0.1, 1); overflow: hidden; background: #222; }
+        .ruleta-numero { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-radius: 50%; }
+        .ruleta-numero span { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-weight: 900; font-size: 20px; color: #fff; text-shadow: 2px 2px 2px #000; }
+        .puntero { position: absolute; top: -25px; left: calc(50% - 20px); width: 40px; height: 50px; background: #fff; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; filter: drop-shadow(0 5px 5px #000); }
         
         #ruleta-publica { background: radial-gradient(circle, #222 0%, #000 100%); height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .modal-premio { display:none; background: var(--main); color:black; padding: 20px 40px; font-size: 30px; font-weight: 900; border-radius: 15px; margin-top: 25px; box-shadow: 0 0 40px var(--main); }
+        .modal-premio { display:none; background: var(--main); color:black; padding: 25px 40px; font-size: 35px; font-weight: 900; border-radius: 20px; margin-top: 30px; box-shadow: 0 0 50px var(--main); }
         
         #loader { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center; color: var(--main); }
     </style>
@@ -42,13 +44,14 @@
 <body>
 
     <script>
-        // TU NUEVO LINK CONFIGURADO
         const API_GAS = "https://script.google.com/macros/s/AKfycby7UGbm2vuahOtNJpUtzksTdyu7HoakK8qUMfU5zteSykAQDmvGLmulky-0_IGBqPuY/exec";
+        const API_VISION = "AIzaSyBi9F3K2PXOeRoR2w-rf63u8d6PZyFUT-U"; 
         let usuarioActual = "";
         let yaMostrePremio = false;
+        let fotoTemporal = "";
     </script>
 
-    <div id="loader"><h2>CONECTANDO...</h2></div>
+    <div id="loader"><h2>PROCESANDO...</h2></div>
 
     <div id="pantalla-login" class="pantalla activa">
         <div class="logo-container">
@@ -57,25 +60,46 @@
         </div>
         <input type="text" id="l-user" placeholder="USUARIO">
         <input type="password" id="l-pass" placeholder="CLAVE">
-        <button class="btn" onclick="iniciarSesion()">ENTRAR AL SISTEMA</button>
+        <button class="btn" onclick="iniciarSesion()">ACCEDER</button>
         <button class="btn btn-secundario" onclick="verRuletaPublica()">PANTALLA CLIENTES</button>
     </div>
 
     <div id="pantalla-dashboard" class="pantalla">
         <div class="header-cajero">
-            <h3>HOLA: <span id="nom-cajero" style="color:var(--main);"></span></h3>
+            <h3 style="margin:0; color:var(--main);">CAJERO: <span id="nom-cajero"></span></h3>
         </div>
 
         <div class="nav-grid">
+            <button class="btn btn-secundario" onclick="mostrarSeccion('sec-vales')">🧾 VALES</button>
+            <button class="btn btn-secundario" onclick="mostrarSeccion('sec-bonos')">🎁 BONOS</button>
             <button class="btn btn-secundario" onclick="mostrarSeccion('sec-ruleta')">🎡 RULETA</button>
             <button class="btn btn-rojo" onclick="location.reload()">🚪 SALIR</button>
+        </div>
+
+        <div id="sec-vales" style="display:none;">
+            <input type="file" accept="image/*" capture="environment" id="cam-vale" style="display:none;" onchange="procesarIA(this, 'vale')">
+            <button class="btn" style="height:100px; background:transparent; border:2px dashed var(--main); color:var(--main);" onclick="document.getElementById('cam-vale').click()">📸 FOTO VOUCHER</button>
+            <div id="form-vale" style="display:none; margin-top:15px;">
+                <input type="text" id="v-cod" placeholder="CÓDIGO">
+                <input type="number" id="v-maq" placeholder="MÁQUINA #">
+                <input type="number" id="v-pag" placeholder="MONTO $">
+                <button class="btn btn-verde" onclick="guardarDato('registrar_vale')">PAGAR VALE</button>
+            </div>
+        </div>
+
+        <div id="sec-bonos" style="display:none;">
+            <input type="file" accept="image/*" capture="environment" id="cam-bono" style="display:none;" onchange="procesarIA(this, 'bono')">
+            <button class="btn" style="height:100px; background:transparent; border:2px dashed var(--verde); color:var(--verde);" onclick="document.getElementById('cam-bono').click()">📸 FOTO CARNET</button>
+            <div id="form-bono" style="display:none; margin-top:15px;">
+                <input type="text" id="b-rut" placeholder="RUT">
+                <button class="btn btn-verde" onclick="guardarDato('registrar_bono')">REGISTRAR BONO</button>
+            </div>
         </div>
 
         <div id="sec-ruleta" style="display:block;">
             <button class="btn btn-secundario" onclick="controlRuleta('ACTIVAR')">MOSTRAR RULETA</button>
             <button class="btn btn-rojo" onclick="controlRuleta('APAGAR')">APAGAR / RESET</button>
             <button class="btn btn-verde" onclick="girarRuletaAdmin()">🎰 LANZAR SORTEO</button>
-            
             <div class="ruleta-wrapper pequeña" id="wrap-ruleta-cajero" style="display:none;">
                 <div class="puntero"></div><div class="ruleta-circulo" id="ruleta-cajero"></div>
             </div>
@@ -83,7 +107,7 @@
     </div>
 
     <div id="ruleta-publica" class="pantalla">
-        <div id="telon" style="font-size:26px; color:var(--main); font-weight:900;">⏳ ESPERANDO SORTEO...</div>
+        <div id="telon" style="font-size:28px; font-weight:900; color:var(--main);">⏳ ESPERANDO SORTEO...</div>
         <div class="ruleta-wrapper" id="wrap-ruleta-cliente" style="display:none;">
             <div class="puntero"></div><div class="ruleta-circulo" id="ruleta-cliente"></div>
         </div>
@@ -92,7 +116,7 @@
 
     <script>
         function loader(s) { document.getElementById('loader').style.display = s ? 'flex' : 'none'; }
-        function mostrarSeccion(id) { document.getElementById('sec-ruleta').style.display='block'; }
+        function mostrarSeccion(id) { ['sec-vales','sec-bonos','sec-ruleta'].forEach(s => document.getElementById(s).style.display='none'); document.getElementById(id).style.display='block'; }
 
         async function iniciarSesion() {
             let u = document.getElementById('l-user').value.trim();
@@ -100,7 +124,7 @@
             if(!u || !p) return alert("Faltan datos");
             loader(true);
             try {
-                const resp = await fetch(`${API_GAS}?action=login&u=${encodeURIComponent(u)}&p=${encodeURIComponent(p)}`);
+                const resp = await fetch(`${API_GAS}?action=login&u=${u}&p=${p}`);
                 const data = await resp.json();
                 if(data.status === "success") {
                     usuarioActual = data.usuario;
@@ -108,7 +132,7 @@
                     document.getElementById('pantalla-login').classList.remove('activa');
                     document.getElementById('pantalla-dashboard').classList.add('activa');
                 } else { alert("ACCESO DENEGADO"); }
-            } catch(e) { alert("ERROR DE CONEXIÓN CON EL NUEVO LINK"); }
+            } catch(e) { alert("ERROR DE CONEXIÓN"); }
             loader(false);
         }
 
@@ -119,9 +143,9 @@
             let bg = 'conic-gradient(';
             for(let i=1; i<=17; i++) {
                 bg += `${cols[(i-1)%cols.length]} ${(i-1)*ang}deg ${i*ang}deg${i<17?',':')'}`;
-                let n = document.createElement('div'); n.style.position='absolute'; n.style.width='100%'; n.style.height='100%';
+                let n = document.createElement('div'); n.className='ruleta-numero';
                 n.style.transform=`rotate(${(i-1)*ang + ang/2}deg)`;
-                n.innerHTML=`<span style="position:absolute; top:12px; left:50%; transform:translateX(-50%); font-weight:900; font-size:20px; color:#fff; text-shadow:2px 2px 2px #000;">${i}</span>`;
+                n.innerHTML=`<span>${i}</span>`;
                 r.appendChild(n);
             }
             r.style.background = bg;
@@ -155,7 +179,6 @@
                     let telon = document.getElementById('telon'); 
                     let wrap = document.getElementById('wrap-ruleta-cliente');
                     let premio = document.getElementById('premio-ganador');
-                    
                     if(d.estado==="ESPERA") { telon.style.display="block"; wrap.style.display="none"; premio.style.display="none"; yaMostrePremio=false; }
                     if(d.estado==="ACTIVA") { telon.style.display="none"; wrap.style.display="block"; premio.style.display="none"; yaMostrePremio=false; }
                     if(d.estado==="GIRANDO" && !yaMostrePremio) {
@@ -166,14 +189,49 @@
                             r_cl.style.transition='transform 8s cubic-bezier(0.1, 0.7, 0.1, 1)';
                             r_cl.style.transform=`rotate(${3600 - ((d.ganador-1)*(360/17)+(360/17)/2)}deg)`;
                         }, 100);
-                        // SUSPENSO DE 8.5 SEGUNDOS
-                        setTimeout(() => { 
-                            document.getElementById('ganador-txt').innerText=d.ganador; 
-                            premio.style.display="block"; 
-                        }, 8500);
+                        setTimeout(() => { document.getElementById('ganador-txt').innerText=d.ganador; premio.style.display="block"; }, 8500);
                     }
                 } catch(e){}
             }, 2000);
+        }
+
+        async function procesarIA(input, tipo) {
+            if(!input.files[0]) return;
+            loader(true);
+            try {
+                let fr = new FileReader(); fr.readAsDataURL(input.files[0]);
+                fr.onload = async () => {
+                    fotoTemporal = fr.result;
+                    let res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${API_VISION}`, {
+                        method: 'POST', body: JSON.stringify({ requests: [{ image: { content: fotoTemporal.split(",")[1] }, features: [{ type: "TEXT_DETECTION" }] }] })
+                    });
+                    let data = await res.json();
+                    let texto = data.responses[0].fullTextAnnotation.text;
+                    if(tipo === 'vale') {
+                        document.getElementById('v-cod').value = texto.match(/\d{5,}/) ? texto.match(/\d{5,}/)[0] : "MANUAL";
+                        document.getElementById('form-vale').style.display = 'block';
+                    } else {
+                        document.getElementById('b-rut').value = texto.match(/\d{7,10}/) ? texto.match(/\d{7,10}/)[0] : "MANUAL";
+                        document.getElementById('form-bono').style.display = 'block';
+                    }
+                }
+            } catch(e) { alert("ERROR IA"); }
+            loader(false);
+        }
+
+        async function guardarDato(accion) {
+            loader(true);
+            let p = { action: accion, cajero: usuarioActual };
+            if(accion==='registrar_vale') {
+                p.codigo = document.getElementById('v-cod').value;
+                p.maquina = document.getElementById('v-maq').value;
+                p.monto_pag = document.getElementById('v-pag').value;
+            } else { p.rut = document.getElementById('b-rut').value; p.monto = 2000; }
+            try {
+                await fetch(API_GAS, { method: 'POST', body: JSON.stringify(p) });
+                alert("REGISTRO EXITOSO"); location.reload();
+            } catch(e) { alert("ERROR AL GUARDAR"); }
+            loader(false);
         }
     </script>
 </body>
