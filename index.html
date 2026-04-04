@@ -7,19 +7,14 @@
     <style>
         :root { --main: #f39c12; --bg: #0d0d0d; --box: #1a1a1a; --rojo: #e74c3c; --verde: #2ecc71; --blanco: #fff; }
         body { background: var(--bg); color: var(--blanco); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; text-align: center; overflow-x: hidden; }
-        
         .pantalla { display: none; padding: 20px; max-width: 500px; margin: 0 auto; min-height: 100vh; }
         .activa { display: block; }
-        
         input, select { width: 100%; background: #000; color: var(--main); border: 1px solid var(--main); padding: 15px; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; text-align: center; outline: none; font-weight: bold; }
         .btn { background: var(--main); color: #000; border: none; padding: 18px; width: 100%; border-radius: 12px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.2s; }
         .btn:active { transform: scale(0.95); }
         .btn-verde { background: var(--verde); } .btn-rojo { background: var(--rojo); color: white;}
-        
         .header { background: var(--box); border-bottom: 2px solid var(--main); padding: 15px; margin-bottom: 20px; border-radius: 0 0 15px 15px; }
         .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        
-        /* RULETA VIP */
         .ruleta-wrapper { position: relative; width: 320px; height: 320px; margin: 30px auto; }
         .pequena { transform: scale(0.7); margin: -30px auto; }
         .ruleta-borde { position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px; border-radius: 50%; background: linear-gradient(45deg, #f39c12, #f1c40f, #e67e22, #f39c12); box-shadow: 0 0 30px rgba(243, 156, 18, 0.6); }
@@ -28,11 +23,9 @@
         .ruleta-numero span { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); color: white; font-weight: 900; font-size: 22px; text-shadow: 2px 2px 4px #000; }
         .puntero { position: absolute; top: -25px; left: calc(50% - 20px); width: 40px; height: 50px; background: #fff; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; }
         .ruleta-centro { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: #fff; border-radius: 50%; z-index: 5; border: 4px solid var(--main); }
-
         #ruleta-publica { display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #222 0%, #000 100%); height: 100vh;}
         .telon-negro { font-size: 26px; color: var(--main); animation: parpadeo 2s infinite; font-weight: bold; text-transform: uppercase; }
         @keyframes parpadeo { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        
         #loader { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; color:var(--main); justify-content:center; align-items:center; flex-direction:column; text-align: center; padding: 20px; }
         .modal-premio { display:none; background: var(--main); color:black; padding: 20px 50px; font-size: 40px; font-weight: 900; border-radius: 20px; margin-top: 30px; box-shadow: 0 0 50px var(--main); animation: pop 0.5s ease-out; }
         @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
@@ -45,6 +38,7 @@
         const API_VISION = "AIzaSyBi9F3K2PXOeRoR2w-rf63u8d6PZyFUT-U"; 
         let usuarioActual = "";
         let fotoBase64Temporal = "";
+        let yaMostrePremio = false; // Candado para el suspenso
     </script>
 
     <div id="loader"><h2 id="loader-txt">Procesando...</h2></div>
@@ -67,30 +61,24 @@
             <button class="btn" onclick="mostrarSeccion('sec-ruleta')">🎡 RULETA</button>
             <button class="btn btn-rojo" onclick="location.reload()">SALIR</button>
         </div>
-
         <div id="sec-vales" style="display:block;">
-            <h3 style="color:var(--main);">LECTURA DE VOUCHERS</h3>
             <input type="file" accept="image/*" capture="environment" id="cam-vale" style="display:none;" onchange="procesarIA(this, 'vale')">
-            <button class="btn" style="padding:30px; border:3px dashed var(--main); background:transparent; color:var(--main);" onclick="document.getElementById('cam-vale').click()">📸 TOMAR FOTO VOUCHER</button>
+            <button class="btn" style="padding:30px; border:3px dashed var(--main); background:transparent; color:var(--main);" onclick="document.getElementById('cam-vale').click()">📸 FOTO VOUCHER</button>
             <div id="form-vale" style="display:none; margin-top:20px; background:#111; padding:20px; border-radius:15px; border: 1px solid #333;">
-                <input type="text" id="v-cod" placeholder="Código detectado">
-                <input type="number" id="v-pag" placeholder="Monto a pagar" style="color:var(--verde); font-size:30px;">
+                <input type="text" id="v-cod" placeholder="Código">
+                <input type="number" id="v-pag" placeholder="Monto" style="color:var(--verde); font-size:30px;">
                 <button class="btn btn-verde" onclick="guardarGAS('registrar_vale')">CONFIRMAR PAGO</button>
             </div>
         </div>
-
         <div id="sec-bonos" style="display:none;">
-            <h3 style="color:var(--main);">BONO CARNET $2.000</h3>
             <input type="file" accept="image/*" capture="environment" id="cam-bono" style="display:none;" onchange="procesarIA(this, 'bono')">
-            <button class="btn" style="padding:30px; border:3px dashed var(--verde); background:transparent; color:var(--verde);" onclick="document.getElementById('cam-bono').click()">📸 TOMAR FOTO CARNET</button>
+            <button class="btn" style="padding:30px; border:3px dashed var(--verde); background:transparent; color:var(--verde);" onclick="document.getElementById('cam-bono').click()">📸 FOTO CARNET</button>
             <div id="form-bono" style="display:none; margin-top:20px; background:#111; padding:20px; border-radius:15px;">
-                <input type="text" id="b-rut" placeholder="RUT Detectado">
-                <button class="btn btn-verde" id="btn-aprobar-bono" onclick="guardarGAS('registrar_bono')">ENTREGAR $2.000</button>
+                <input type="text" id="b-rut" placeholder="RUT">
+                <button class="btn btn-verde" onclick="guardarGAS('registrar_bono')">ENTREGAR $2.000</button>
             </div>
         </div>
-
         <div id="sec-ruleta" style="display:none;">
-            <h3 style="color:var(--main);">CONTROL DE SORTEO</h3>
             <div style="display: flex; gap: 10px;">
                 <button class="btn" style="background:#3498db; color:white;" onclick="controlRuleta('ACTIVAR')">MOSTRAR</button>
                 <button class="btn btn-rojo" onclick="controlRuleta('APAGAR')">RESETEAR</button>
@@ -117,8 +105,7 @@
 
         async function iniciarSesion() {
             let u = document.getElementById('l-user').value; let p = document.getElementById('l-pass').value;
-            if(!u || !p) return alert("Completa los datos");
-            loader("Iniciando Sesión...");
+            loader("Entrando...");
             try {
                 let res = await fetch(`${API_GAS}?action=login&u=${u}&p=${p}`);
                 let data = await res.json();
@@ -135,8 +122,7 @@
             let colores = ['#E50914', '#1E90FF', '#FFD700', '#8A2BE2', '#FF8C00', '#00FA9A']; 
             let angulo = 360 / 17; let bg = 'conic-gradient(';
             for(let i=1; i<=17; i++) {
-                let color = colores[(i-1) % colores.length];
-                bg += `${color} ${(i-1)*angulo}deg ${i*angulo}deg${i<17?',':')'}`;
+                bg += `${colores[(i-1)%colores.length]} ${(i-1)*angulo}deg ${i*angulo}deg${i<17?',':')'}`;
                 let num = document.createElement('div'); num.className = 'ruleta-numero';
                 num.style.transform = `rotate(${(i-1)*angulo + angulo/2}deg)`;
                 num.innerHTML = `<span>${i}</span>`; r.appendChild(num);
@@ -149,19 +135,16 @@
             let r = document.getElementById(idRuleta); document.getElementById(idContenedor).style.display = 'block';
             r.style.transition = 'none'; r.style.transform = 'rotate(0deg)';
             setTimeout(() => {
-                let angulo = 360 / 17; let offset = (ganador - 1) * angulo + angulo / 2;
+                let offset = (ganador - 1) * (360/17) + (360/17)/2;
                 r.style.transition = 'transform 8s cubic-bezier(0.1, 0.7, 0.1, 1)';
                 r.style.transform = `rotate(${3600 - offset}deg)`;
             }, 100);
         }
 
         async function controlRuleta(comando, ganador="") {
-            if(comando === 'APAGAR') {
-                document.getElementById('wrap-ruleta-cajero').style.display = 'none';
-                document.getElementById('ruleta-cajero').style.transform = 'rotate(0deg)';
-            }
+            if(comando === 'APAGAR') { document.getElementById('wrap-ruleta-cajero').style.display = 'none'; }
             if(comando === 'ACTIVAR') document.getElementById('wrap-ruleta-cajero').style.display = 'block';
-            await fetch(`${API_GAS}?action=ruleta_control&comando=${comando}&ganador=${ganador}`);
+            fetch(`${API_GAS}?action=ruleta_control&comando=${comando}&ganador=${ganador}`);
         }
 
         function girarRuletaAdmin() {
@@ -179,11 +162,13 @@
                     let d = await r.json();
                     let telon = document.getElementById('telon'); let wrap = document.getElementById('wrap-ruleta-cliente');
                     let premio = document.getElementById('premio-ganador');
-                    if(d.estado === "ESPERA") { telon.style.display="block"; wrap.style.display="none"; premio.style.display="none"; }
-                    if(d.estado === "ACTIVA") { telon.style.display="none"; wrap.style.display="block"; premio.style.display="none"; }
-                    if(d.estado === "GIRANDO" && premio.style.display === "none") {
+                    
+                    if(d.estado === "ESPERA") { telon.style.display="block"; wrap.style.display="none"; premio.style.display="none"; yaMostrePremio = false; }
+                    if(d.estado === "ACTIVA") { telon.style.display="none"; wrap.style.display="block"; premio.style.display="none"; yaMostrePremio = false; }
+                    if(d.estado === "GIRANDO" && !yaMostrePremio) {
+                        yaMostrePremio = true;
                         aplicarGiro('wrap-ruleta-cliente', 'ruleta-cliente', d.ganador);
-                        setTimeout(() => { document.getElementById('ganador-txt').innerText = d.ganador; premio.style.display="block"; }, 8000);
+                        setTimeout(() => { document.getElementById('ganador-txt').innerText = d.ganador; premio.style.display="block"; }, 8500);
                     }
                 } catch(e){}
             }, 2000);
@@ -191,29 +176,22 @@
 
         async function procesarIA(input, tipo) {
             if(!input.files[0]) return;
-            loader("I.A. LEYENDO... ESPERE");
+            loader("I.A. LEYENDO...");
             try {
                 fotoBase64Temporal = await comprimir(input.files[0]);
                 let res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${API_VISION}`, {
-                    method: 'POST',
-                    body: JSON.stringify({ requests: [{ image: { content: fotoBase64Temporal.split(",")[1] }, features: [{ type: "TEXT_DETECTION" }] }] })
+                    method: 'POST', body: JSON.stringify({ requests: [{ image: { content: fotoBase64Temporal.split(",")[1] }, features: [{ type: "TEXT_DETECTION" }] }] })
                 });
                 let data = await res.json();
-                if(!data.responses[0].fullTextAnnotation) throw new Error("No se detectó texto. Intente otra foto.");
                 let texto = data.responses[0].fullTextAnnotation.text;
-                
                 if(tipo === 'vale') {
                     document.getElementById('v-cod').value = texto.match(/\d{5,}/) ? texto.match(/\d{5,}/)[0] : "MANUAL";
-                    document.getElementById('v-pag').value = "";
                     document.getElementById('form-vale').style.display = 'block';
                 } else {
-                    document.getElementById('b-rut').value = texto.match(/\d{1,2}\.?\d{3}\.?\d{3}-?[0-9Kk]/) ? texto.match(/\d{1,2}\.?\d{3}\.?\d{3}-?[0-9Kk]/)[0] : "MANUAL";
+                    document.getElementById('b-rut').value = texto.match(/\d{7,10}/) ? texto.match(/\d{7,10}/)[0] : "MANUAL";
                     document.getElementById('form-bono').style.display = 'block';
                 }
-            } catch(e) { 
-                alert("DETALLE: " + e.message + "\n\nUse ingreso manual."); 
-                document.getElementById('form-'+tipo).style.display='block';
-            }
+            } catch(e) { alert("Error IA. Ingrese manual."); document.getElementById('form-'+tipo).style.display='block'; }
             ocultarLoader();
         }
 
@@ -222,11 +200,7 @@
             let p = { action: accion, cajero: usuarioActual, fotoBase64: fotoBase64Temporal };
             if(accion==='registrar_vale') { p.codigo=document.getElementById('v-cod').value; p.monto_pag=document.getElementById('v-pag').value; }
             else { p.rut=document.getElementById('b-rut').value; p.monto=2000; }
-            try { 
-                let res = await fetch(API_GAS, { method: 'POST', body: JSON.stringify(p) });
-                alert("¡EXITO! GUARDADO EN EXCEL");
-                location.reload(); 
-            } catch(e) { alert("Error al guardar. Revise internet."); }
+            try { await fetch(API_GAS, { method: 'POST', body: JSON.stringify(p) }); alert("¡EXITO!"); location.reload(); } catch(e) { alert("Error"); }
             ocultarLoader();
         }
 
@@ -236,8 +210,7 @@
                 r.onload = e => {
                     let img = new Image(); img.src = e.target.result;
                     img.onload = () => {
-                        let c = document.createElement('canvas');
-                        let ctx = c.getContext('2d');
+                        let c = document.createElement('canvas'); let ctx = c.getContext('2d');
                         c.width = 800; c.height = img.height * (800 / img.width);
                         ctx.drawImage(img, 0, 0, c.width, c.height);
                         resolve(c.toDataURL('image/jpeg', 0.6));
