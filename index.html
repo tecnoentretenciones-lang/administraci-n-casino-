@@ -2,52 +2,74 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TECNOENTRETODO PRO - BAZAR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TECNOENTRETE - PANEL MAESTRO</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <nav>
-        <h1 id="brand">TECNOENTRETODO ⚡</h1>
-        <div id="caja-header">CAJA HOY: <span id="monto-caja">$0</span></div>
-    </nav>
-
-    <div class="tabs">
-        <button onclick="verTab('maquinas')">🎰 MÁQUINAS (1-17)</button>
-        <button onclick="verTab('gastos')">💸 GASTOS/PASILLEROS</button>
-        <button onclick="verTab('bonos')">💎 CLUB VIP QR</button>
+    <div id="login-screen" class="full-screen">
+        <div class="login-card">
+            <h1>TECNOENTRETE ⚡</h1>
+            <input type="text" id="user-admin" placeholder="Usuario Administrador">
+            <input type="password" id="pass-admin" placeholder="PIN de Acceso">
+            <button class="btn-main" onclick="validarIngreso()">ENTRAR AL SISTEMA</button>
+        </div>
     </div>
 
-    <section id="sec-maquinas" class="tab-content">
-        <div class="grid-maquinas" id="grid-bazar">
+    <div id="main-panel" class="hidden">
+        <nav class="nav-maestra">
+            <span class="logo">TECNOENTRETE</span>
+            <div id="status-caja">CAJA: <span id="monto-total">$0</span></div>
+            <button onclick="cerrarSesion()">❌</button>
+        </nav>
+
+        <div class="menu-grid">
+            <button class="menu-item" onclick="mostrarSeccion('contabilidad')">📸 FOTO CONTABLE</button>
+            <button class="menu-item" onclick="mostrarSeccion('vouchers')">🎟️ TIRAR VOUCHER</button>
+            <button class="menu-item" onclick="mostrarSeccion('ruleta')">🎡 RULETA PREDICTOR</button>
+            <button class="menu-item" onclick="mostrarSeccion('bales')">💸 REGISTRO VALES</button>
+        </div>
+
+        <section id="sec-contabilidad" class="content-sec hidden">
+            <h3>Contabilidad por Máquina</h3>
+            <select id="select-maquina-foto">
+                </select>
+            <div class="camera-box">
+                <input type="file" accept="image/*" capture="camera" id="foto-maquina">
+                <p>Toma foto a los contadores (Entrada/Salida)</p>
             </div>
-    </section>
+            <input type="number" id="valor-entrada" placeholder="Lectura Entrada">
+            <input type="number" id="valor-salida" placeholder="Lectura Salida">
+            <button class="btn-guardar" onclick="subirContabilidad()">SUBIR A LA NUBE</button>
+        </section>
 
-    <section id="sec-gastos" class="tab-content hidden">
-        <div class="card">
-            <h3>Registro de Egresos</h3>
-            <input type="text" id="gasto-nom" placeholder="Nombre (Ej: Pasillero Juan)">
-            <input type="number" id="gasto-val" placeholder="Monto $">
-            <select id="gasto-cat">
-                <option value="Consumo">Consumo (Bebidas/Galletas)</option>
-                <option value="Aseo">Aseo/Local</option>
-                <option value="Tecnico">Repuestos/Técnico</option>
-            </select>
-            <button class="btn-guardar" onclick="registrarGasto()">REGISTRAR GASTO</button>
-        </div>
-    </section>
+        <section id="sec-vouchers" class="content-sec hidden">
+            <h3>Generador de Vouchers</h3>
+            <div class="voucher-box">
+                <input type="number" id="monto-voucher" placeholder="Monto $">
+                <button class="btn-imprimir" onclick="generarVoucher()">GENERAR Y VALIDAR</button>
+            </div>
+            <div id="voucher-resultado"></div>
+        </section>
 
-    <section id="sec-bonos" class="tab-content hidden">
-        <div class="card">
-            <h3>Liberar Bono Fidelidad</h3>
-            <p>Ingrese ID y PIN del cliente.</p>
-            <input type="text" id="qr-input" placeholder="ID del Código QR">
-            <input type="password" id="pin-input" placeholder="PIN de 4 dígitos">
-            <button class="btn-bono" onclick="validarBono()">VERIFICAR Y PAGAR</button>
-        </div>
-    </section>
+        <section id="sec-ruleta" class="content-sec hidden">
+            <div id="ruleta-container">
+                <h3>Predictor Ruleta Pro</h3>
+                <div id="ultimos-numeros"></div>
+                <button onclick="predecirSiguiente()">CALCULAR JUGADA</button>
+            </div>
+        </section>
+
+        <section id="sec-bales" class="content-sec hidden">
+            <h3>Registro de Bales y Gastos</h3>
+            <input type="text" id="nom-vale" placeholder="Persona / Concepto">
+            <input type="number" id="val-vale" placeholder="Monto $">
+            <button class="btn-gasto" onclick="registrarVale()">GUARDAR VALE</button>
+        </section>
+    </div>
 
     <script src="app_master.js"></script>
 </body>
 </html>
+
