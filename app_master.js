@@ -26,3 +26,4 @@ function registrarGanador(num) {
     
     // Aquí podrías mandarlo a Supabase para que se vea en la TV del local
 }
+
