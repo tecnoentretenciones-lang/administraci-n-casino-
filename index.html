@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TECNOENTRETE - PANEL MAESTRO</title>
+    <title>TECNOENTRETE - PANEL TOTAL</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -11,65 +11,59 @@
     <div id="login-screen" class="full-screen">
         <div class="login-card">
             <h1>TECNOENTRETE ⚡</h1>
-            <input type="text" id="user-admin" placeholder="Usuario Administrador">
-            <input type="password" id="pass-admin" placeholder="PIN de Acceso">
-            <button class="btn-main" onclick="validarIngreso()">ENTRAR AL SISTEMA</button>
+            <input type="text" id="user-admin" placeholder="USUARIO">
+            <input type="password" id="pass-admin" placeholder="PIN">
+            <button class="btn-main" onclick="validarIngreso()">ENTRAR</button>
         </div>
     </div>
 
     <div id="main-panel" class="hidden">
         <nav class="nav-maestra">
             <span class="logo">TECNOENTRETE</span>
-            <div id="status-caja">CAJA: <span id="monto-total">$0</span></div>
-            <button onclick="cerrarSesion()">❌</button>
+            <button onclick="cerrarSesion()">CERRAR</button>
         </nav>
 
         <div class="menu-grid">
-            <button class="menu-item" onclick="mostrarSeccion('contabilidad')">📸 FOTO CONTABLE</button>
-            <button class="menu-item" onclick="mostrarSeccion('vouchers')">🎟️ TIRAR VOUCHER</button>
-            <button class="menu-item" onclick="mostrarSeccion('ruleta')">🎡 RULETA PREDICTOR</button>
-            <button class="menu-item" onclick="mostrarSeccion('bales')">💸 REGISTRO VALES</button>
+            <button class="menu-item" onclick="mostrarSeccion('sorteos')">🎁 SORTEO VIERNES</button>
+            <button class="menu-item" onclick="mostrarSeccion('contabilidad')">📸 CONTABILIDAD</button>
+            <button class="menu-item" onclick="mostrarSeccion('ruleta')">🎡 RULETA PRO</button>
+            <button class="menu-item" onclick="mostrarSeccion('vouchers')">🎟️ VOUCHERS</button>
         </div>
 
-        <section id="sec-contabilidad" class="content-sec hidden">
-            <h3>Contabilidad por Máquina</h3>
-            <select id="select-maquina-foto">
-                </select>
-            <div class="camera-box">
-                <input type="file" accept="image/*" capture="camera" id="foto-maquina">
-                <p>Toma foto a los contadores (Entrada/Salida)</p>
+        <section id="sec-sorteos" class="content-sec hidden">
+            <div class="sorteo-container">
+                <h2>🎰 GRAN SORTEO EN VIVO</h2>
+                <div id="display-sorteo" class="numero-grande">0000</div>
+                <div class="controles-sorteo">
+                    <button class="btn-sortear" onclick="iniciarSorteo()">¡SORTEAR AHORA!</button>
+                    <button class="btn-reset" onclick="resetearSorteo()">LIMPIAR</button>
+                </div>
+                <div id="lista-ganadores">
+                    <h3>ÚLTIMOS GANADORES:</h3>
+                    <ul id="historial-sorteo"></ul>
+                </div>
             </div>
-            <input type="number" id="valor-entrada" placeholder="Lectura Entrada">
-            <input type="number" id="valor-salida" placeholder="Lectura Salida">
-            <button class="btn-guardar" onclick="subirContabilidad()">SUBIR A LA NUBE</button>
         </section>
 
-        <section id="sec-vouchers" class="content-sec hidden">
-            <h3>Generador de Vouchers</h3>
-            <div class="voucher-box">
-                <input type="number" id="monto-voucher" placeholder="Monto $">
-                <button class="btn-imprimir" onclick="generarVoucher()">GENERAR Y VALIDAR</button>
-            </div>
-            <div id="voucher-resultado"></div>
+        <section id="sec-contabilidad" class="content-sec hidden">
+            <h3>Contabilidad Máquinas</h3>
+            <input type="file" accept="image/*" capture="camera" id="foto-input">
+            <input type="number" id="valor-lectura" placeholder="Monto Contador">
+            <button class="btn-guardar" onclick="subirContabilidad()">GUARDAR FOTO</button>
         </section>
 
         <section id="sec-ruleta" class="content-sec hidden">
-            <div id="ruleta-container">
-                <h3>Predictor Ruleta Pro</h3>
-                <div id="ultimos-numeros"></div>
-                <button onclick="predecirSiguiente()">CALCULAR JUGADA</button>
+            <h3>Predictor de Ruleta</h3>
+            <div id="ruleta-felipe">
+                <p>Ingresa últimos 3 números:</p>
+                <input type="number" id="num1" class="n-ruleta">
+                <input type="number" id="num2" class="n-ruleta">
+                <input type="number" id="num3" class="n-ruleta">
+                <button onclick="calcularPatron()">PREDECIR</button>
             </div>
-        </section>
-
-        <section id="sec-bales" class="content-sec hidden">
-            <h3>Registro de Bales y Gastos</h3>
-            <input type="text" id="nom-vale" placeholder="Persona / Concepto">
-            <input type="number" id="val-vale" placeholder="Monto $">
-            <button class="btn-gasto" onclick="registrarVale()">GUARDAR VALE</button>
         </section>
     </div>
 
     <script src="app_master.js"></script>
 </body>
 </html>
-
