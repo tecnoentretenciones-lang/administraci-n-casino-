@@ -2,209 +2,52 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CASINO VIP - BAZZAN</title>
-    <style>
-        :root { --main: #f39c12; --bg: #0d0d0d; --box: #1a1a1a; --rojo: #e74c3c; --verde: #2ecc71; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; text-align: center; overflow-x: hidden; }
-        
-        .pantalla { display: none; padding: 20px; max-width: 500px; margin: 0 auto; min-height: 100vh; }
-        .activa { display: block !important; }
-        
-        .logo-container { margin: 30px 0; }
-        .logo-text { font-size: 50px; font-weight: 900; color: var(--main); letter-spacing: -2px; margin: 0; }
-        .sub-text { color: #555; letter-spacing: 4px; font-size: 14px; margin-top: -5px; }
-
-        input { width: 100%; background: #000; color: var(--main); border: 1px solid #333; padding: 18px; border-radius: 12px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; text-align: center; outline: none; }
-        
-        .btn { background: var(--main); color: #000; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-bottom: 15px; }
-        .btn:active { transform: scale(0.96); }
-        .btn-secundario { background: #1a1a1a; color: #fff; border: 1px solid #333; }
-        .btn-rojo { background: var(--rojo); color: #fff; }
-        .btn-verde { background: var(--verde); color: #000; }
-
-        .header-cajero { background: var(--box); padding: 20px; border-radius: 0 0 25px 25px; border-bottom: 2px solid var(--main); margin-bottom: 25px; }
-        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-
-        /* RULETA */
-        .ruleta-wrapper { position: relative; width: 320px; height: 320px; margin: 30px auto; display: block; }
-        .pequena { transform: scale(0.7); margin: -40px auto; }
-        .ruleta-circulo { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #fff; position: relative; transition: transform 8s cubic-bezier(0.1, 0.8, 0.1, 1); overflow: hidden; background: #222; }
-        .ruleta-numero { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-radius: 50%; }
-        .ruleta-numero span { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-weight: 900; font-size: 20px; color: #fff; text-shadow: 2px 2px 2px #000; }
-        .puntero { position: absolute; top: -25px; left: calc(50% - 20px); width: 40px; height: 50px; background: #fff; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; filter: drop-shadow(0 5px 5px #000); }
-        
-        /* PANTALLA PÚBLICA CORREGIDA */
-        #ruleta-publica-completa { 
-            display: none; 
-            background: radial-gradient(circle, #222 0%, #000 100%); 
-            width: 100%; 
-            height: 100vh; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            z-index: 9999; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-        }
-        .modal-premio { display:none; background: var(--main); color:black; padding: 25px 40px; font-size: 35px; font-weight: 900; border-radius: 20px; margin-top: 30px; box-shadow: 0 0 50px var(--main); }
-        #loader { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center; color: var(--main); }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TECNOENTRETODO PRO - BAZAR</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+    <nav>
+        <h1 id="brand">TECNOENTRETODO ⚡</h1>
+        <div id="caja-header">CAJA HOY: <span id="monto-caja">$0</span></div>
+    </nav>
 
-    <script>
-        const API_GAS = "https://script.google.com/macros/s/AKfycby7UGbm2vuahOtNJpUtzksTdyu7HoakK8qUMfU5zteSykAQDmvGLmulky-0_IGBqPuY/exec";
-        let usuarioActual = "";
-        let yaMostrePremio = false;
-    </script>
-
-    <div id="loader"><h2>PROCESANDO...</h2></div>
-
-    <div id="pantalla-login" class="pantalla activa">
-        <div class="logo-container">
-            <h1 class="logo-text">CASINO VIP</h1>
-            <p class="sub-text">SISTEMA BAZZAN</p>
-        </div>
-        <input type="text" id="l-user" placeholder="USUARIO">
-        <input type="password" id="l-pass" placeholder="CLAVE">
-        <button class="btn" onclick="iniciarSesion()">ACCEDER</button>
-        <button class="btn btn-secundario" onclick="verRuletaPublica()">PANTALLA CLIENTES</button>
+    <div class="tabs">
+        <button onclick="verTab('maquinas')">🎰 MÁQUINAS (1-17)</button>
+        <button onclick="verTab('gastos')">💸 GASTOS/PASILLEROS</button>
+        <button onclick="verTab('bonos')">💎 CLUB VIP QR</button>
     </div>
 
-    <div id="pantalla-dashboard" class="pantalla">
-        <div class="header-cajero">
-            <h3 style="margin:0; color:var(--main);">CAJERO: <span id="nom-cajero"></span></h3>
-        </div>
-        <div class="nav-grid">
-            <button class="btn btn-secundario" onclick="mostrarSeccion('sec-vales')">🧾 VALES</button>
-            <button class="btn btn-secundario" onclick="mostrarSeccion('sec-bonos')">🎁 BONOS</button>
-            <button class="btn btn-secundario" onclick="mostrarSeccion('sec-ruleta')">🎡 RULETA</button>
-            <button class="btn btn-rojo" onclick="location.reload()">🚪 SALIR</button>
-        </div>
-
-        <div id="sec-vales" style="display:none;">
-            <p>Sección Vales Activa</p>
-            <button class="btn btn-verde" onclick="alert('Funcionalidad de cámara lista')">📸 ESCANEAR VOUCHER</button>
-        </div>
-
-        <div id="sec-bonos" style="display:none;">
-            <p>Sección Bonos Activa</p>
-            <button class="btn btn-verde" onclick="alert('Funcionalidad de cámara lista')">📸 ESCANEAR CARNET</button>
-        </div>
-
-        <div id="sec-ruleta" style="display:block;">
-            <button class="btn btn-secundario" onclick="controlRuleta('ACTIVAR')">MOSTRAR RULETA</button>
-            <button class="btn btn-rojo" onclick="controlRuleta('APAGAR')">APAGAR / RESET</button>
-            <button class="btn btn-verde" onclick="girarRuletaAdmin()">🎰 LANZAR SORTEO</button>
-            <div class="ruleta-wrapper pequeña" id="wrap-ruleta-cajero" style="display:none;">
-                <div class="puntero"></div><div class="ruleta-circulo" id="ruleta-cajero"></div>
+    <section id="sec-maquinas" class="tab-content">
+        <div class="grid-maquinas" id="grid-bazar">
             </div>
+    </section>
+
+    <section id="sec-gastos" class="tab-content hidden">
+        <div class="card">
+            <h3>Registro de Egresos</h3>
+            <input type="text" id="gasto-nom" placeholder="Nombre (Ej: Pasillero Juan)">
+            <input type="number" id="gasto-val" placeholder="Monto $">
+            <select id="gasto-cat">
+                <option value="Consumo">Consumo (Bebidas/Galletas)</option>
+                <option value="Aseo">Aseo/Local</option>
+                <option value="Tecnico">Repuestos/Técnico</option>
+            </select>
+            <button class="btn-guardar" onclick="registrarGasto()">REGISTRAR GASTO</button>
         </div>
-    </div>
+    </section>
 
-    <div id="ruleta-publica-completa">
-        <div id="telon" style="font-size:28px; font-weight:900; color:var(--main);">⏳ ESPERANDO SORTEO...</div>
-        <div class="ruleta-wrapper" id="wrap-ruleta-cliente" style="display:none;">
-            <div class="puntero"></div><div class="ruleta-circulo" id="ruleta-cliente"></div>
+    <section id="sec-bonos" class="tab-content hidden">
+        <div class="card">
+            <h3>Liberar Bono Fidelidad</h3>
+            <p>Escanee el QR del cliente y pida su clave.</p>
+            <input type="text" id="qr-input" placeholder="ID del Código QR">
+            <input type="password" id="pin-input" placeholder="PIN de 4 dígitos">
+            <button class="btn-bono" onclick="validarBono()">VERIFICAR Y PAGAR</button>
         </div>
-        <div id="premio-ganador" class="modal-premio">MÁQUINA <span id="ganador-txt"></span> GANA</div>
-        <br>
-        <button class="btn btn-rojo" style="width:200px; font-size:12px; position: absolute; bottom: 20px;" onclick="location.reload()">VOLVER AL LOGIN</button>
-    </div>
+    </section>
 
-    <script>
-        function loader(s) { document.getElementById('loader').style.display = s ? 'flex' : 'none'; }
-        
-        function mostrarSeccion(id) { 
-            ['sec-vales','sec-bonos','sec-ruleta'].forEach(s => document.getElementById(s).style.display='none'); 
-            document.getElementById(id).style.display='block'; 
-        }
-
-        async function iniciarSesion() {
-            let u = document.getElementById('l-user').value.trim();
-            let p = document.getElementById('l-pass').value.trim();
-            loader(true);
-            try {
-                const resp = await fetch(`${API_GAS}?action=login&u=${u}&p=${p}`);
-                const data = await resp.json();
-                if(data.status === "success") {
-                    usuarioActual = data.usuario;
-                    document.getElementById('nom-cajero').innerText = usuarioActual.toUpperCase();
-                    document.getElementById('pantalla-login').classList.remove('activa');
-                    document.getElementById('pantalla-dashboard').classList.add('activa');
-                } else { alert("ACCESO DENEGADO"); }
-            } catch(e) { alert("ERROR DE CONEXIÓN"); }
-            loader(false);
-        }
-
-        function construir(id) {
-            let r = document.getElementById(id); r.innerHTML = '';
-            let ang = 360/17;
-            let cols = ['#E50914','#1E90FF','#FFD700','#8A2BE2','#FF8C00','#00FA9A'];
-            for(let i=1; i<=17; i++) {
-                let n = document.createElement('div'); n.className='ruleta-numero';
-                n.style.transform=`rotate(${(i-1)*ang + ang/2}deg)`;
-                n.innerHTML=`<span>${i}</span>`;
-                r.appendChild(n);
-            }
-            let bg = 'conic-gradient(';
-            for(let i=1; i<=17; i++) { bg += `${cols[(i-1)%cols.length]} ${(i-1)*ang}deg ${i*ang}deg${i<17?',':')'}`; }
-            r.style.background = bg;
-        }
-
-        async function controlRuleta(cmd, gan="") {
-            if(cmd==='APAGAR') document.getElementById('wrap-ruleta-cajero').style.display='none';
-            if(cmd==='ACTIVAR') {
-                document.getElementById('wrap-ruleta-cajero').style.display='block';
-                construir('ruleta-cajero');
-            }
-            fetch(`${API_GAS}?action=ruleta_control&comando=${cmd}&ganador=${gan}`);
-        }
-
-        function girarRuletaAdmin() {
-            let g = Math.floor(Math.random()*17)+1;
-            controlRuleta("GIRAR", g);
-            let r = document.getElementById('ruleta-cajero');
-            r.style.transition='none'; r.style.transform='rotate(0deg)';
-            setTimeout(() => {
-                r.style.transition='transform 8s cubic-bezier(0.1, 0.7, 0.1, 1)';
-                r.style.transform=`rotate(${3600 - ((g-1)*(360/17) + (360/17)/2)}deg)`;
-            }, 100);
-        }
-
-        function verRuletaPublica() {
-            // ESTO ACTIVA LA PANTALLA DE CLIENTES
-            document.getElementById('pantalla-login').classList.remove('activa');
-            document.getElementById('ruleta-publica-completa').style.display = 'flex';
-            construir('ruleta-cliente');
-            
-            setInterval(async () => {
-                try {
-                    let res = await fetch(`${API_GAS}?action=ruleta_estado`);
-                    let d = await res.json();
-                    let telon = document.getElementById('telon'); 
-                    let wrap = document.getElementById('wrap-ruleta-cliente');
-                    let premio = document.getElementById('premio-ganador');
-                    if(d.estado==="ESPERA") { telon.style.display="block"; wrap.style.display="none"; premio.style.display="none"; yaMostrePremio=false; }
-                    if(d.estado==="ACTIVA") { telon.style.display="none"; wrap.style.display="block"; premio.style.display="none"; yaMostrePremio=false; }
-                    if(d.estado==="GIRANDO" && !yaMostrePremio) {
-                        yaMostrePremio = true;
-                        let r_cl = document.getElementById('ruleta-cliente');
-                        r_cl.style.transition='none'; r_cl.style.transform='rotate(0deg)';
-                        setTimeout(() => {
-                            r_cl.style.transition='transform 8s cubic-bezier(0.1, 0.7, 0.1, 1)';
-                            r_cl.style.transform=`rotate(${3600 - ((d.ganador-1)*(360/17)+(360/17)/2)}deg)`;
-                        }, 100);
-                        setTimeout(() => { 
-                            document.getElementById('ganador-txt').innerText=d.ganador; 
-                            premio.style.display="block"; 
-                        }, 8500);
-                    }
-                } catch(e){}
-            }, 2000);
-        }
-    </script>
+    <script src="app_master.js"></script>
 </body>
 </html>
