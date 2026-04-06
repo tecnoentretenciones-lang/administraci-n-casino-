@@ -2,65 +2,143 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TECNOENTRETE - CONTROL BAZAR</title>
     <style>
-        :root { --main: #f39c12; --bg: #0d0d0d; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; text-align: center; }
-        .ruleta-mini { width: 220px; height: 220px; border-radius: 50%; border: 5px solid #fff; margin: 20px auto; position: relative; transition: transform 8s cubic-bezier(0.1, 0.8, 0.1, 1); overflow: hidden; }
-        .puntero { width: 30px; height: 40px; background: #fff; clip-path: polygon(50% 100%, 0 0, 100% 0); margin: -10px auto; z-index: 10; position: relative; }
-        .btn { background: var(--main); padding: 20px; width: 90%; border-radius: 15px; font-weight: 900; margin: 10px 0; }
-        .full-login { position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:200; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+        :root { --main: #f39c12; --bg: #0d0d0d; --box: #1a1a1a; --verde: #2ecc71; --azul: #3498db; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; }
+        
+        /* BLOQUEO DE LOGIN */
+        .login-full { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        
+        .pantalla { display: none; padding: 20px; max-width: 500px; margin: 0 auto; }
+        .activa { display: block; }
+
+        input, select, textarea { width: 100%; background: #000; color: var(--main); border: 1px solid #333; padding: 15px; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; text-align: center; font-size: 16px; }
+        .btn { background: var(--main); color: #000; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-bottom: 10px; }
+        .btn-sec { background: #222; color: #fff; border: 1px solid #444; }
+
+        /* RULETA MINI CONTROL */
+        .ruleta-wrapper { position: relative; width: 220px; height: 220px; margin: 15px auto; }
+        .ruleta-circulo { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; position: relative; transition: transform 8s cubic-bezier(0.1, 0.8, 0.1, 1); overflow: hidden; background: #222; }
+        .puntero { position: absolute; top: -20px; left: calc(50% - 15px); width: 30px; height: 40px; background: #fff; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; }
+        .segmento { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-radius: 50%; }
+        .segmento span { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-weight: 900; font-size: 16px; color: #fff; text-shadow: 1px 1px 1px #000; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .card { background: var(--box); padding: 15px; border-radius: 15px; border: 1px solid #333; font-size: 12px; }
     </style>
 </head>
 <body>
-    <div id="login-cajero" class="full-login">
-        <h2>LOGIN TRABAJADOR</h2>
-        <input type="password" id="p-cajero" style="padding:15px; text-align:center; margin-bottom:10px;" placeholder="CLAVE BAZAR">
-        <button class="btn" onclick="checkCajero()">ENTRAR</button>
+
+    <div id="p-login" class="login-full">
+        <h1 style="color:var(--main); margin:0;">TECNOENTRETE</h1>
+        <p style="color:#555; letter-spacing:3px;">ACCESO PERSONAL</p>
+        <input type="text" id="u-nom" placeholder="USUARIO">
+        <input type="password" id="u-pass" placeholder="CONTRASEÑA">
+        <button class="btn" onclick="validarAcceso()">ENTRAR AL PANEL</button>
     </div>
 
-    <div class="puntero"></div>
-    <div id="r-mini" class="ruleta-mini"></div>
-    <button class="btn" onclick="lanzarSorteo()">🎰 LANZAR SORTEO TV</button>
-    <button class="btn" style="background:#222; color:#fff;">📸 FOTO PAGO / CONTADORES</button>
-    <button class="btn" style="background:#222; color:#fff;">👥 REGISTRAR CLIENTELA</button>
+    <div id="p-menu" class="pantalla">
+        <h2 style="color:var(--main);">CONTROL BAZAR</h2>
+        <div class="grid">
+            <div class="card" onclick="ver('p-gastos')">💸<br>GASTOS / PAGOS</div>
+            <div class="card" onclick="ver('p-clientes')">👥<br>CLIENTELA</div>
+            <div class="card" onclick="ver('p-sorteo')">🎡<br>SORTEO TV</div>
+            <div class="card" onclick="location.reload()">🚪<br>CERRAR</div>
+        </div>
+    </div>
+
+    <div id="p-gastos" class="pantalla">
+        <button class="btn btn-sec" onclick="ver('p-menu')">⬅ VOLVER</button>
+        <h3>REGISTRO DE SALIDA</h3>
+        <select id="tipo-gasto">
+            <option value="pago">PAGO DE PREMIO (MAQUINA)</option>
+            <option value="gasto">GASTO LOCAL / INSUMOS</option>
+        </select>
+        <input type="file" accept="image/*" capture="environment">
+        <input type="number" placeholder="MONTO $">
+        <input type="text" placeholder="N° MÁQUINA O DETALLE">
+        <button class="btn" style="background:var(--verde)" onclick="alert('Registrado con Foto')">GUARDAR EN CUENTA</button>
+    </div>
+
+    <div id="p-clientes" class="pantalla">
+        <button class="btn btn-sec" onclick="ver('p-menu')">⬅ VOLVER</button>
+        <h3>BONO POR PERSONA</h3>
+        <input type="text" placeholder="NOMBRE CLIENTE">
+        <select id="rango-cliente">
+            <option value="normal">CLIENTE NORMAL</option>
+            <option value="vip">CLIENTE VIP ⭐</option>
+            <option value="super">CLIENTE SUPER VIP 🔥</option>
+        </select>
+        <input type="number" placeholder="MONTO BONO $ (EJ: 2000)">
+        <button class="btn" style="background:var(--azul)" onclick="alert('Bono Registrado')">ASIGNAR BONO</button>
+    </div>
+
+    <div id="p-sorteo" class="pantalla">
+        <button class="btn btn-sec" onclick="ver('p-menu')">⬅ VOLVER</button>
+        <div class="ruleta-wrapper">
+            <div class="puntero"></div><div id="r-ctrl" class="ruleta-circulo"></div>
+        </div>
+        <button class="btn" style="background:var(--verde); font-size:20px;" onclick="lanzarSorteo()">🎰 TIRAR EN VIVO (TV)</button>
+        <h2 id="ganador-res"></h2>
+    </div>
 
     <script>
         const colores = ['#E50914','#1E90FF','#FFD700','#8A2BE2','#FF8C00','#00FA9A','#E50914','#1E90FF','#FFD700','#8A2BE2','#FF8C00','#00FA9A','#E50914','#1E90FF','#FFD700','#8A2BE2','#FF8C00'];
-        
-        function dibujar() {
-            const r = document.getElementById('r-mini');
-            let bg = 'conic-gradient(';
+
+        function dibujar(id) {
+            const r = document.getElementById(id);
+            if(!r) return;
+            r.innerHTML = '';
             const ang = 360/17;
+            let bg = 'conic-gradient(';
             for(let i=1; i<=17; i++){
                 bg += `${colores[i-1]} ${(i-1)*ang}deg ${i*ang}deg${i<17?',':')'}`;
-                let d = document.createElement('div'); d.style.position='absolute'; d.style.width='100%'; d.style.height='100%';
-                d.style.transform=`rotate(${(i-1)*ang + ang/2}deg)`;
-                d.innerHTML=`<span style="position:absolute; top:10px; left:50%; transform:translateX(-50%); font-weight:900;">${i}</span>`;
+                let d = document.createElement('div');
+                d.className = 'segmento';
+                d.style.transform = `rotate(${(i-1)*ang + ang/2}deg)`;
+                d.innerHTML = `<span>${i}</span>`;
                 r.appendChild(d);
             }
             r.style.background = bg;
         }
 
-        function checkCajero() {
-            if(document.getElementById('p-cajero').value === "2026") { 
-                document.getElementById('login-cajero').style.display='none';
-            } else { alert("CLAVE INCORRECTA"); }
+        function validarAcceso() {
+            const u = document.getElementById('u-nom').value;
+            const p = document.getElementById('u-pass').value;
+            if(u !== "" && p !== "") {
+                document.getElementById('p-login').style.display = 'none';
+                ver('p-menu');
+            } else { alert("Usuario y Clave requeridos"); }
+        }
+
+        function ver(id) {
+            document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+            document.getElementById(id).classList.add('activa');
+            if(id === 'p-sorteo') dibujar('r-ctrl');
         }
 
         function lanzarSorteo() {
-            const ganador = Math.floor(Math.random()*17)+1;
-            const rot = 3600 - ((ganador-1)*(360/17)+(360/17)/2);
-            localStorage.setItem('ultimo_ganador', ganador); // Sincroniza con la TV
-            const r = document.getElementById('r-mini');
+            const ganador = Math.floor(Math.random() * 17) + 1;
+            const rot = 3600 - ((ganador-1)*(360/17) + (360/17)/2);
+            
+            // SINCRONIZACIÓN LOCAL (Para la TV)
+            localStorage.setItem('TECNO_GANADOR', ganador);
+            localStorage.setItem('TECNO_ESTADO', 'GIRANDO');
+
+            const r = document.getElementById('r-ctrl');
             r.style.transition = 'none'; r.style.transform = 'rotate(0deg)';
             setTimeout(() => {
                 r.style.transition = 'transform 8s cubic-bezier(0.1, 0.7, 0.1, 1)';
                 r.style.transform = `rotate(${rot}deg)`;
             }, 100);
+
+            setTimeout(() => {
+                document.getElementById('ganador-res').innerText = "¡MÁQUINA " + ganador + "!";
+                localStorage.setItem('TECNO_ESTADO', 'PREMIO');
+            }, 8500);
         }
-        dibujar();
     </script>
 </body>
 </html>
