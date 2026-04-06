@@ -2,44 +2,146 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TECNOENTRETE - GESTIÓN TOTAL</title>
     <style>
-        :root { --main: #f39c12; --bg: #0d0d0d; --box: #1a1a1a; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; text-align: center; margin:0; }
-        .header { padding: 30px; background: var(--box); border-bottom: 2px solid var(--main); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; max-width: 500px; margin: auto; }
-        .card { background: var(--box); padding: 30px; border-radius: 20px; border: 1px solid #333; cursor: pointer; }
-        input { width: 80%; padding: 15px; margin: 10px; border-radius: 10px; border: none; text-align: center; }
-        .btn { background: var(--main); color: #000; border: none; padding: 20px; width: 80%; border-radius: 15px; font-weight: 900; cursor: pointer; }
-        .full { position: fixed; top:0; left:0; width: 100%; height: 100%; background: #000; z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        :root { --main: #f39c12; --bg: #0d0d0d; --box: #1a1a1a; --rojo: #e74c3c; --verde: #2ecc71; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; text-align: center; }
+        
+        .pantalla { display: none; padding: 20px; max-width: 500px; margin: 0 auto; min-height: 100vh; }
+        .activa { display: block; }
+        
+        /* LOGO ORIGINAL BAZZAN ESTILO */
+        .logo-container { margin: 30px 0; }
+        .logo-text { font-size: 50px; font-weight: 900; color: var(--main); letter-spacing: -2px; margin: 0; }
+        .sub-text { color: #555; letter-spacing: 4px; font-size: 14px; margin-top: -5px; text-transform: uppercase; }
+
+        input, select, textarea { width: 100%; background: #000; color: var(--main); border: 1px solid #333; padding: 18px; border-radius: 12px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; text-align: center; outline: none; }
+        
+        /* BOTONES CON EL ESTILO QUE TE GUSTA */
+        .btn { background: var(--main); color: #000; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: 900; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-bottom: 15px; transition: 0.2s; box-shadow: 0 4px 0 #b37400; }
+        .btn:active { transform: scale(0.96); box-shadow: 0 2px 0 #b37400; }
+        .btn-secundario { background: #1a1a1a; color: #fff; border: 1px solid #333; box-shadow: 0 4px 0 #000; }
+        .btn-rojo { background: var(--rojo); color: #fff; box-shadow: 0 4px 0 #8e2a1e; }
+        .btn-verde { background: var(--verde); color: #000; box-shadow: 0 4px 0 #219351; }
+
+        .header-cajero { background: var(--box); padding: 20px; border-radius: 0 0 25px 25px; border-bottom: 2px solid var(--main); margin-bottom: 25px; }
+        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+
+        /* RULETA CLÁSICA 17 NÚMEROS */
+        .ruleta-wrapper { position: relative; width: 320px; height: 320px; margin: 30px auto; }
+        .ruleta-circulo { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #fff; position: relative; transition: transform 8s cubic-bezier(0.1, 0.8, 0.1, 1); overflow: hidden; background: #222; }
+        .puntero { position: absolute; top: -25px; left: calc(50% - 20px); width: 40px; height: 50px; background: #fff; clip-path: polygon(50% 100%, 0 0, 100% 0); z-index: 10; filter: drop-shadow(0 5px 5px #000); }
+        .segmento { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .segmento span { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); font-weight: 900; font-size: 20px; color: #fff; text-shadow: 2px 2px 2px #000; }
     </style>
 </head>
 <body>
-    <div id="login-admin" class="full">
-        <h1 style="color:var(--main)">SISTEMA CENTRAL</h1>
-        <input type="password" id="pass-master" placeholder="CLAVE MAESTRA">
-        <button class="btn" onclick="accesoMaster()">ENTRAR AL PANEL</button>
+
+    <div id="pantalla-login" class="pantalla activa">
+        <div class="logo-container">
+            <h1 class="logo-text">TECNOENTRETE</h1>
+            <p class="sub-text">SISTEMA DE GESTIÓN</p>
+        </div>
+        <input type="text" id="l-user" placeholder="USUARIO">
+        <input type="password" id="l-pass" placeholder="CLAVE">
+        <button class="btn" onclick="iniciarSesion()">ACCEDER</button>
     </div>
 
-    <div class="header">
-        <h1>TECNOENTRETE</h1>
-        <p>ADMINISTRADOR GENERAL</p>
+    <div id="pantalla-dueno" class="pantalla">
+        <div class="header-cajero">
+            <h3 style="margin:0; color:var(--main);">ADMINISTRADOR: FELIPE</h3>
+        </div>
+        <div class="nav-grid">
+            <button class="btn btn-secundario" onclick="ir('pantalla-cajero')">🏢 LOCALES</button>
+            <button class="btn btn-secundario">🤝 CONSIGNACIÓN</button>
+            <button class="btn btn-secundario">💳 GASTOS EMPRESA</button>
+            <button class="btn btn-secundario">👥 PERSONAL</button>
+        </div>
+        <button class="btn btn-rojo" onclick="location.reload()">🚪 CERRAR SESIÓN</button>
     </div>
 
-    <div class="grid">
-        <div class="card" onclick="alert('Gestión de Locales Abierta')">🏢 LOCALES</div>
-        <div class="card" onclick="alert('Consignaciones Activas')">🤝 CONSIGNACIÓN</div>
-        <div class="card" onclick="alert('Reporte de Gastos')">💳 GASTOS EMPRESA</div>
-        <div class="card" onclick="alert('Crear Cajero/Pasillero')">👥 PERSONAL</div>
+    <div id="pantalla-cajero" class="pantalla">
+        <div class="header-cajero">
+            <h3 style="margin:0; color:var(--main);">LOCAL: BAZAR | <span id="nom-trabajador"></span></h3>
+        </div>
+        <div class="nav-grid">
+            <button class="btn btn-secundario" onclick="ir('sec-pago-foto')">📸 FOTO PAGO</button>
+            <button class="btn btn-secundario" onclick="ir('sec-clientes')">👥 CLIENTES</button>
+            <button class="btn btn-secundario" onclick="ir('sec-ruleta')">🎡 SORTEO</button>
+            <button class="btn btn-rojo" onclick="ir('pantalla-dueno')">⬅ VOLVER</button>
+        </div>
+
+        <div id="sec-pago-foto" style="display:none;">
+            <input type="file" accept="image/*" capture="environment">
+            <input type="number" placeholder="MONTO PAGADO $">
+            <button class="btn btn-verde">GUARDAR PAGO</button>
+        </div>
+
+        <div id="sec-clientes" style="display:none;">
+            <input type="text" placeholder="NOMBRE CLIENTE">
+            <select>
+                <option>NORMAL</option>
+                <option>VIP ⭐</option>
+                <option>SUPER VIP 🔥</option>
+            </select>
+            <button class="btn btn-verde">REGISTRAR CLIENTE</button>
+        </div>
+
+        <div id="sec-ruleta" style="display:none;">
+            <div class="ruleta-wrapper" style="transform: scale(0.8); margin-top:-20px;">
+                <div class="puntero"></div><div id="r-admin" class="ruleta-circulo"></div>
+            </div>
+            <button class="btn btn-verde" onclick="lanzarSorteo()">🎰 LANZAR SORTEO TV</button>
+        </div>
     </div>
 
     <script>
-        function accesoMaster() {
-            const p = document.getElementById('pass-master').value;
-            if(p === "1234") { // Tu clave de dueño
-                document.getElementById('login-admin').style.display = 'none';
-            } else { alert("ACCESO DENEGADO"); }
+        const colores = ['#E50914','#1E90FF','#FFD700','#8A2BE2','#FF8C00','#00FA9A','#E50914','#1E90FF','#FFD700','#8A2BE2','#FF8C00','#00FA9A','#E50914','#1E90FF','#FFD700','#8A2BE2','#FF8C00'];
+
+        function dibujarRuleta(id) {
+            const r = document.getElementById(id);
+            if(!r) return; r.innerHTML = '';
+            const ang = 360/17;
+            let bg = 'conic-gradient(';
+            for(let i=1; i<=17; i++){
+                bg += `${colores[i-1]} ${(i-1)*ang}deg ${i*ang}deg${i<17?',':')'}`;
+                let d = document.createElement('div'); d.className='segmento';
+                d.style.transform=`rotate(${(i-1)*ang + ang/2}deg)`;
+                d.innerHTML=`<span>${i}</span>`;
+                r.appendChild(d);
+            }
+            r.style.background = bg;
+        }
+
+        function ir(id) {
+            document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+            document.getElementById(id).classList.add('activa');
+            if(id === 'pantalla-cajero') dibujarRuleta('r-admin');
+        }
+
+        function iniciarSesion() {
+            const u = document.getElementById('l-user').value.toUpperCase();
+            const p = document.getElementById('l-pass').value;
+            if(u === "FELIPE") {
+                ir('pantalla-dueno');
+            } else if(u !== "" && p !== "") {
+                document.getElementById('nom-trabajador').innerText = u;
+                ir('pantalla-cajero');
+            } else { alert("Datos incorrectos"); }
+        }
+
+        function lanzarSorteo() {
+            const ganador = Math.floor(Math.random() * 17) + 1;
+            const rot = 3600 - ((ganador-1)*(360/17) + (360/17)/2);
+            localStorage.setItem('TECNO_GANADOR', ganador);
+            const r = document.getElementById('r-admin');
+            r.style.transition = 'none'; r.style.transform = 'rotate(0deg)';
+            setTimeout(() => {
+                r.style.transition = 'transform 8s cubic-bezier(0.1, 0.7, 0.1, 1)';
+                r.style.transform = `rotate(${rot}deg)`;
+            }, 100);
+            setTimeout(() => alert("¡MÁQUINA " + ganador + " GANADORA!"), 8500);
         }
     </script>
 </body>
